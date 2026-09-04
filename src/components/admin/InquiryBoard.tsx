@@ -32,6 +32,9 @@ export function InquiryBoard() {
 
   const [data, setData] = useState<ListResponse | null>(null);
   const [selected, setSelected] = useState<BoardRecord | null>(null);
+  // 되돌릴 수 없는 작업이라 반드시 확인 단계를 거칩니다.
+  const [deleteTarget, setDeleteTarget] = useState<BoardRecord | null>(null);
+  const [deleteError, setDeleteError] = useState("");
 
   /**
    * 비밀번호는 서버에서만 검증합니다. 페이지를 넘길 때도 같은 비밀번호를
@@ -91,12 +94,39 @@ export function InquiryBoard() {
     }
   }
 
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    setLoading(true);
+    setDeleteError("");
+    try {
+      const res = await fetch("/api/inquiries", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, id: deleteTarget.id, page: data?.page ?? 1 }),
+      });
+      const json: ListResponse = await res.json();
+      if (!res.ok) {
+        setDeleteError(json.message ?? "삭제하지 못했습니다.");
+        return;
+      }
+      setData(json);
+      setSelected(null);
+      setDeleteTarget(null);
+    } catch {
+      setDeleteError("네트워크 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   function closeAll() {
     setStage("closed");
     setPassword("");
     setAuthError("");
     setData(null);
     setSelected(null);
+    setDeleteTarget(null);
+    setDeleteError("");
   }
 
   return (
@@ -188,13 +218,109 @@ export function InquiryBoard() {
         onClose={closeAll}
         labelledById="inquiry-board-title"
       >
-        {selected ? (
-          <DetailView record={selected} onBack={() => setSelected(null)} />
+        {deleteTarget ? (
+          <DeleteConfirm
+            record={deleteTarget}
+            loading={loading}
+            error={deleteError}
+            onConfirm={confirmDelete}
+            onCancel={() => {
+              setDeleteTarget(null);
+              setDeleteError("");
+            }}
+          />
+        ) : selected ? (
+          <DetailView
+            record={selected}
+            onBack={() => setSelected(null)}
+            onDelete={() => setDeleteTarget(selected)}
+          />
         ) : (
-          <ListView data={data} loading={loading} onSelect={setSelected} onPage={goPage} />
+          <ListView
+            data={data}
+            loading={loading}
+            onSelect={setSelected}
+            onPage={goPage}
+            onDelete={setDeleteTarget}
+          />
         )}
       </Modal>
     </>
+  );
+}
+
+function DeleteConfirm({
+  record,
+  loading,
+  error,
+  onConfirm,
+  onCancel,
+}: {
+  record: BoardRecord;
+  loading: boolean;
+  error: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex items-start gap-3 rounded-xl border border-error/40 bg-error-container/20 p-4">
+        <Icon name="warning" className="mt-0.5 text-xl text-error" />
+        <div className="font-jakarta text-body-md text-on-surface">
+          <p className="font-semibold">이 문의를 삭제할까요?</p>
+          <p className="mt-1 text-on-surface-variant">
+            삭제하면 되돌릴 수 없습니다. 백업이 없다면 연락처도 함께 사라집니다.
+          </p>
+        </div>
+      </div>
+
+      <dl className="divide-y divide-outline-variant/10 rounded-xl border border-outline-variant/20">
+        {(
+          [
+            ["번호", String(record.number)],
+            ["접수일시", formatDate(record.createdAt)],
+            ["업체명", record.companyName],
+            ["담당자", record.contactName],
+          ] as [string, string][]
+        ).map(([label, value]) => (
+          <div key={label} className="grid grid-cols-[7rem_1fr] gap-3 p-3.5">
+            <dt className="font-jakarta text-body-sm font-semibold text-on-surface-variant">
+              {label}
+            </dt>
+            <dd className="font-jakarta text-body-md text-on-surface">{value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      {error ? (
+        <p
+          role="alert"
+          className="flex items-center gap-1.5 font-jakarta text-body-sm text-error"
+        >
+          <Icon name="error" className="text-base" />
+          {error}
+        </p>
+      ) : null}
+
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={onConfirm}
+          disabled={loading}
+          className="h-12 flex-1 rounded-xl bg-error-container font-sora text-body-md font-bold text-on-error-container transition-colors hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loading ? "삭제 중..." : "삭제"}
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={loading}
+          className="h-12 rounded-xl border border-outline-variant/30 px-6 font-jakarta text-body-md font-semibold text-on-surface transition-colors hover:bg-surface-container-high"
+        >
+          취소
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -203,11 +329,13 @@ function ListView({
   loading,
   onSelect,
   onPage,
+  onDelete,
 }: {
   data: ListResponse | null;
   loading: boolean;
   onSelect: (r: BoardRecord) => void;
   onPage: (p: number) => void;
+  onDelete: (r: BoardRecord) => void;
 }) {
   if (!data) return null;
 
@@ -235,7 +363,8 @@ function ListView({
               <th scope="col" className="w-16 py-2.5 pr-3 font-semibold">번호</th>
               <th scope="col" className="w-40 py-2.5 pr-3 font-semibold">날짜</th>
               <th scope="col" className="py-2.5 pr-3 font-semibold">업체명</th>
-              <th scope="col" className="w-56 py-2.5 font-semibold">주요업종</th>
+              <th scope="col" className="w-48 py-2.5 pr-3 font-semibold">주요업종</th>
+              <th scope="col" className="w-16 py-2.5 text-right font-semibold">삭제</th>
             </tr>
           </thead>
           <tbody>
@@ -261,7 +390,20 @@ function ListView({
                     {item.companyName}
                   </button>
                 </td>
-                <td className="py-3 text-on-surface-variant">{item.categoryLabel}</td>
+                <td className="py-3 pr-3 text-on-surface-variant">{item.categoryLabel}</td>
+                <td className="py-3 text-right">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(item);
+                    }}
+                    aria-label={`${item.companyName} 문의 삭제`}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-xl text-on-surface-variant transition-colors hover:bg-error-container/40 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/50"
+                  >
+                    <Icon name="delete" className="text-lg" />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -323,7 +465,15 @@ function PageButton({
   );
 }
 
-function DetailView({ record, onBack }: { record: BoardRecord; onBack: () => void }) {
+function DetailView({
+  record,
+  onBack,
+  onDelete,
+}: {
+  record: BoardRecord;
+  onBack: () => void;
+  onDelete: () => void;
+}) {
   const rows: [string, string][] = [
     ["번호", String(record.number)],
     ["접수일시", formatDate(record.createdAt)],
@@ -363,7 +513,7 @@ function DetailView({ record, onBack }: { record: BoardRecord; onBack: () => voi
         </p>
       </div>
 
-      <div className="flex justify-start">
+      <div className="flex justify-between gap-3">
         <button
           type="button"
           onClick={onBack}
@@ -371,6 +521,14 @@ function DetailView({ record, onBack }: { record: BoardRecord; onBack: () => voi
         >
           <Icon name="arrow_back" className="text-lg" />
           목록으로
+        </button>
+        <button
+          type="button"
+          onClick={onDelete}
+          className="inline-flex h-11 items-center gap-1.5 rounded-xl border border-error/40 px-5 font-jakarta text-body-md font-semibold text-error transition-colors hover:bg-error-container/30"
+        >
+          <Icon name="delete" className="text-lg" />
+          삭제
         </button>
       </div>
     </div>

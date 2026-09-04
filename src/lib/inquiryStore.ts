@@ -40,3 +40,19 @@ export function appendInquiry(record: InquiryRecord): Promise<void> {
     await writeFile(DATA_FILE, `${JSON.stringify(inquiries, null, 2)}\n`, "utf-8");
   });
 }
+
+/**
+ * 문의 1건 삭제. 되돌릴 수 없습니다.
+ * 반환값은 실제로 삭제되었는지 여부(없는 id면 false).
+ */
+export function deleteInquiry(id: string): Promise<boolean> {
+  return enqueue(async () => {
+    const inquiries = await readInquiries();
+    const next = inquiries.filter((item) => item.id !== id);
+    if (next.length === inquiries.length) return false;
+
+    await mkdir(DATA_DIR, { recursive: true });
+    await writeFile(DATA_FILE, `${JSON.stringify(next, null, 2)}\n`, "utf-8");
+    return true;
+  });
+}
