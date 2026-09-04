@@ -23,8 +23,14 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+/**
+ * OG 이미지 등 절대 URL의 기준 도메인.
+ * 실제 서비스 도메인이 다르면 서버 환경변수 SITE_URL 로 덮어쓰세요.
+ */
+const SITE_URL = process.env.SITE_URL ?? "https://autrin.co.kr";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://autrin.co.kr"),
+  metadataBase: new URL(SITE_URL),
   title: "AUTRIN - 통제받지 않는 전문성, 모빌리티 생태계의 새로운 연결 기준",
   description:
     "단방향 가격 경쟁은 끝났습니다. AUTRIN은 파트너 주권 100%를 보장하는 상생 생태계로 정비·신중고차·카케어 등 애프터마켓 전문 사업자를 연결합니다. 입점비·등록비 0원.",

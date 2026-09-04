@@ -14,6 +14,30 @@ export const dynamic = "force-dynamic";
 export const PAGE_SIZE = 10;
 
 /**
+ * 시도 횟수 제한에 쓸 클라이언트 식별자.
+ *
+ * X-Forwarded-For 의 "첫" 값을 쓰면 안 됩니다. Nginx 의
+ * `$proxy_add_x_forwarded_for` 는 클라이언트가 보낸 XFF 뒤에 실제 IP를 덧붙이므로,
+ * 첫 값은 클라이언트가 마음대로 넣을 수 있습니다. 매 요청마다 다른 값을 흘려보내면
+ * 시도 제한이 그대로 무력화됩니다.
+ *
+ * 그래서 Nginx 가 $remote_addr 로 덮어쓰는 X-Real-IP 를 우선 사용하고,
+ * 없으면 XFF 의 "마지막" 값(가장 가까운 프록시가 붙인 실제 접속 IP)을 씁니다.
+ * → Nginx 설정에 `proxy_set_header X-Real-IP $remote_addr;` 가 반드시 있어야 합니다.
+ */
+function clientKey(request: Request): string {
+  const realIp = request.headers.get("x-real-ip")?.trim();
+  if (realIp) return realIp;
+
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) {
+    const parts = forwarded.split(",").map((v) => v.trim()).filter(Boolean);
+    if (parts.length > 0) return parts[parts.length - 1];
+  }
+  return "local";
+}
+
+/**
  * 문의 목록 조회 (비밀번호 필요)
  *
  * 인증 없이 목록이 새어나가면 안 되므로 GET은 열지 않고 POST로만 받습니다.
@@ -35,8 +59,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "요청 형식이 올바르지 않습니다." }, { status: 400 });
   }
 
-  // 프록시 뒤에서는 신뢰할 수 없는 값이지만, 로컬 단일 인스턴스 기준 완화책입니다.
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+  const ip = clientKey(request);
 
   if (isRateLimited(ip)) {
     return NextResponse.json(
