@@ -24,10 +24,15 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 /**
- * OG 이미지 등 절대 URL의 기준 도메인.
- * 실제 서비스 도메인이 다르면 서버 환경변수 SITE_URL 로 덮어쓰세요.
+ * canonical·og:url 등 절대 URL의 기준 도메인.
+ * 기본값이 운영 도메인이므로 별도 설정 없이 동작합니다.
+ *
+ * 주의: 이 페이지는 정적 프리렌더되므로 SITE_URL 은 **빌드 시점** 변수입니다.
+ * 다른 도메인으로 띄우려면 실행 시가 아니라 빌드 전에 지정해야 합니다.
+ *   SITE_URL=https://staging.example.com npm run build
+ * (INQUIRY_ADMIN_PASSWORD 는 라우트 핸들러에서 요청마다 읽으므로 런타임 변수입니다.)
  */
-const SITE_URL = process.env.SITE_URL ?? "https://autrin.co.kr";
+const SITE_URL = process.env.SITE_URL ?? "https://autrin.winspot.kr";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -43,10 +48,13 @@ export const metadata: Metadata = {
     "파트너 제휴",
     "AI 오토매칭",
   ],
+  // 중복 색인을 막기 위한 정규 URL. metadataBase 기준으로 절대 URL이 됩니다.
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "ko_KR",
     siteName: "AUTRIN",
+    url: "/",
     title: "AUTRIN - 모빌리티 생태계의 새로운 연결 기준",
     description:
       "인간 주도형 기술과 상생 생태계로 구현하는 애프터마켓의 미래. 비용 0, 기회 무한.",
