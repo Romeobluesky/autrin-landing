@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    overscroll-behavior-y: none;
+    /* 한글은 어절 중간에서 줄이 끊기면 가독성이 크게 떨어집니다.
+       (예: "전문 / 성," "모빌리 / 티") 어절 단위로만 줄바꿈하고,
+       한 어절이 컨테이너보다 길 때만 예외적으로 끊습니다. */
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  /* 고정 헤더(h-20 = 5rem) 높이만큼 앵커 도착 위치를 보정합니다.
+     html의 scroll-padding-top과 함께 쓰면 오프셋이 두 배가 되므로 여기서만 지정. */
+  [id] {
+    scroll-margin-top: 5rem;
+  }
+
+  ::selection {
+    background-color: #5a9ae4;
+    color: #003059;
+  }
+}
+
+@layer components {
+  /* Level 1 — 카드 / 데이터 모듈 (DESIGN.md: Elevation & Depth) */
+  .glass-card {
+    background-color: rgb(7 30 74 / 0.45);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgb(90 154 228 / 0.15);
+    box-shadow: 0 8px 32px 0 rgb(0 15 38 / 0.5);
+  }
+
+  /* Level 2 — hover / active */
+  .glass-card-hover:hover {
+    border-color: rgb(90 154 228 / 0.45);
+    box-shadow: 0 0 24px -4px rgb(59 130 246 / 0.25);
+  }
+
+  /* Level 3 — sticky nav / overlay */
+  .glass-overlay {
+    background-color: rgb(0 24 59 / 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgb(90 154 228 / 0.3);
+    box-shadow: 0 24px 48px -12px rgb(0 0 0 / 0.75);
+  }
+
+  /* 리스트 구분선 — 페이딩 그라디언트 */
+  .divider-fade {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(90 154 228 / 0.18), transparent);
+  }
+
+  .hairline {
+    border-color: rgb(90 154 228 / 0.15);
+  }
+
+  /*
+   * 카테고리 아이콘 원본(.docs/icon-sample)은 어두운 단색 아트워크라
+   * 딥네이비 배경에서 보이지 않습니다. 원본 시안과 동일하게 브랜드
+   * 일렉트릭 블루(#5A9AE4)로 리컬러하고 글로우를 입힙니다.
+   */
+  .icon-tint {
+    filter: brightness(0) saturate(100%) invert(64%) sepia(48%) saturate(948%)
+      hue-rotate(187deg) brightness(96%) contrast(92%)
+      drop-shadow(0 0 10px rgb(90 154 228 / 0.4));
+  }
+
+  /*
+   * Material Symbols 기본 세팅
+   *
+   * 아이콘은 리거처 폰트라 폰트 로드 전에는 "check_circle" 같은 글자가 그대로
+   * 렌더됩니다. 그대로 두면 아이콘이 들어간 버튼/리스트 폭이 훨씬 넓어져
+   * 히어로 높이가 1126px → 1022px로 줄고, 배경 이미지(object-cover)가
+   * 눈에 띄게 리스케일됩니다. (측정값: CLS 0.098)
+   *
+   * 그래서 박스를 1em 정사각형으로 고정해, 폰트 로드 여부와 무관하게
+   * 차지하는 공간이 항상 같도록 합니다.
+   *
+   * overflow는 hidden으로 두지 않습니다 — 글리프의 라인박스가 1em보다 4px 커서
+   * 모든 아이콘 하단이 잘립니다. 레이아웃 고정은 width/height만으로 충분하고,
+   * 로드 전 리거처 글자는 display=block(layout.tsx)이 감춰줍니다.
+   */
+  .material-symbols-outlined {
+    font-family: "Material Symbols Outlined", sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
+    flex: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    -webkit-font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* 접근성: 모션 최소화 설정 존중 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

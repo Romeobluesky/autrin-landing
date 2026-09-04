@@ -37,3 +37,7 @@ next-env.d.ts
 
 # user
 /.docs/
+/.claude/
+/.vscode/
+# local inquiry data (파트너 문의 접수 원본)
+/data/inquiries.json
