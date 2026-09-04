@@ -360,11 +360,12 @@ function ListView({
         <table className="w-full min-w-[560px] border-collapse font-jakarta text-body-sm">
           <thead>
             <tr className="border-b border-outline-variant/30 text-left text-on-surface-variant">
-              <th scope="col" className="w-16 py-2.5 pr-3 font-semibold">번호</th>
+              {/* 번호·삭제는 pr 없이 두어야 컬럼 중심과 정확히 맞습니다. */}
+              <th scope="col" className="w-16 py-2.5 text-center font-semibold">번호</th>
               <th scope="col" className="w-40 py-2.5 pr-3 font-semibold">날짜</th>
               <th scope="col" className="py-2.5 pr-3 font-semibold">업체명</th>
               <th scope="col" className="w-48 py-2.5 pr-3 font-semibold">주요업종</th>
-              <th scope="col" className="w-16 py-2.5 text-right font-semibold">삭제</th>
+              <th scope="col" className="w-16 py-2.5 text-center font-semibold">삭제</th>
             </tr>
           </thead>
           <tbody>
@@ -374,7 +375,9 @@ function ListView({
                 onClick={() => onSelect(item)}
                 className="cursor-pointer border-b border-outline-variant/10 transition-colors hover:bg-surface-container-high"
               >
-                <td className="py-3 pr-3 font-mono text-on-surface-variant">{item.number}</td>
+                <td className="py-3 text-center font-mono text-on-surface-variant">
+                  {item.number}
+                </td>
                 <td className="py-3 pr-3 font-mono text-on-surface-variant">
                   {formatDate(item.createdAt)}
                 </td>
@@ -391,7 +394,7 @@ function ListView({
                   </button>
                 </td>
                 <td className="py-3 pr-3 text-on-surface-variant">{item.categoryLabel}</td>
-                <td className="py-3 text-right">
+                <td className="py-3 text-center">
                   <button
                     type="button"
                     onClick={(e) => {
