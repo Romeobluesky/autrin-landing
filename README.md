@@ -1,145 +1,54 @@
-# autrin-landing
+# AUTRIN (오트린) 랜딩페이지
 
-오트린(AUTRIN) 랜딩페이지 — Next.js 16 (App Router) + TypeScript + Tailwind CSS
+모빌리티 애프터마켓 상생 생태계 **AUTRIN**의 파트너 모집 랜딩페이지입니다.
 
-## 실행
+- 운영 주소: https://autrin.winspot.kr
+- 형태: 한국어 원페이지(One-page) 웹사이트, 모바일 우선(Mobile-first) 반응형
 
-```bash
-npm install
-npm run dev        # http://localhost:3000
-npm run build      # 프로덕션 빌드
-npm run start      # 프로덕션 서버
-npm run lint       # ESLint
-npm run typecheck  # tsc --noEmit
-```
+## 이 사이트의 목적
 
-## 섹션 ID 맵
+지역 전문 사업자(정비 · 신/중고차 · 카케어 · 부품/용품 등)에게 AUTRIN을 소개하고,
+**오토멤버십 합류와 제휴 문의 접수**로 이어지도록 만든 파트너 모집 페이지입니다.
 
-수정 요청 시 아래 ID로 위치를 지정해주세요. 모든 ID는
-[src/lib/sections.ts](src/lib/sections.ts)에 정의되어 있고, 헤더·푸터 네비게이션이
-같은 값을 참조하므로 앵커가 어긋나지 않습니다.
+기존 가격 비교 플랫폼의 단방향 통제와 최저가 경쟁에서 벗어나,
+사업자의 독립성을 보장하는 '상생 생태계'와 '신뢰의 아치'를 핵심 메시지로 전달합니다.
 
-| # | 섹션 ID | 내용 | 파일 |
-|---|---------|------|------|
-| — | `global-header` | 고정 헤더 / GNB | [Header.tsx](src/components/Header.tsx) |
-| 1 | `hero-section` | 도입부 메인 카피 + KPI 바 | [Hero.tsx](src/components/sections/Hero.tsx) |
-| 2 | `ecosystem-section` | 8개 카테고리 생태계 그리드 | [Ecosystem.tsx](src/components/sections/Ecosystem.tsx) |
-| 3 | `problem-section` | 문제 제기 / 기존 플랫폼 대비 비교 | [Problem.tsx](src/components/sections/Problem.tsx) |
-| 4 | `solution-section` | 핵심 가치 3 Pillar | [Solution.tsx](src/components/sections/Solution.tsx) |
-| 5 | `technology-section` | CRM 웹 콘솔 (기술과 신뢰) | [Technology.tsx](src/components/sections/Technology.tsx) |
-| 6 | `bottom-cta-section` | 최종 전환 CTA | [BottomCta.tsx](src/components/sections/BottomCta.tsx) |
-| 7 | `contact-form-section` | 파트너 문의 폼 | [ContactForm.tsx](src/components/sections/ContactForm.tsx) |
-| — | `global-footer` | 푸터 | [Footer.tsx](src/components/Footer.tsx) |
+## 핵심 메시지
 
-### 섹션 내부 세부 ID
+> **통제받지 않는 전문성, 모빌리티 생태계의 새로운 연결 기준**
+> 인간 주도형 기술과 상생 생태계로 구현하는 애프터마켓의 미래
 
-| 섹션 | 하위 ID |
-|------|---------|
-| Header | `header-brand-container`, `header-main-nav`, `header-mobile-nav`, `header-actions-container`, `cta-join-membership` |
-| Hero | `hero-copy`, `hero-visual`, `hero-kpi-bar`, `hero-kpi-01` ~ `hero-kpi-04` |
-| Ecosystem | `ecosystem-grid`, `ecosystem-card-01` ~ `ecosystem-card-08` |
-| Problem | `problem-visual`, `problem-comparison`, `problem-card-conventional`, `problem-card-autrin` |
-| Solution | `solution-grid`, `solution-card-01` ~ `solution-card-03` |
-| Technology | `technology-copy`, `technology-dashboard-mockup`, `technology-dashboard-metrics`, `technology-dashboard-queue`, `technology-dashboard-sparkline` |
-| Contact | `partner-inquiry-form`, `company-name`, `contact-name`, `phone-number`, `business-category`, `inquiry-message`, `contact-success-panel` |
-| Footer | `footer-brand-summary`, `footer-navigation-links`, `footer-contact-info`, `footer-legal-bar` |
-| 전역 | `scroll-to-top` — 600px 이상 스크롤 시 우측 하단에 나타나는 맨 위로 버튼 ([ScrollToTop.tsx](src/components/ui/ScrollToTop.tsx)) |
+| 가치 | 내용 |
+|------|------|
+| 파트너 주권 100% 보장 | 단가 결정, 작업 방식, 자재 선택, 최종 계약까지 모두 파트너의 고유 권한 |
+| AI 오토매칭 에이전트 | 가격이 아닌 '조건'과 '역량'을 분석해 전환율 높은 유효 수요만 선별 연결 |
+| 진입 장벽 ZERO | 초기 가입비 · 프로필 등록비 · 홍보 노출 비용 전면 무료 |
+| 무료 웹 콘솔(CRM) | 원터치 상태 토글과 통합 대시보드, 개인정보 원천 격리 인프라 |
 
-> 고정 헤더(80px) 때문에 앵커 이동 시 제목이 가려지지 않도록
-> `globals.css`에서 `[id] { scroll-margin-top: 5rem }`을 적용했습니다.
+## 페이지 구성
 
-## 문의 폼 데이터
+| 순서 | 섹션 | 전달 내용 |
+|------|------|-----------|
+| 1 | Hero | 브랜드 메인 카피와 대표 지표, 멤버십 합류 CTA |
+| 2 | 에코시스템 | AUTRIN이 연결하는 8개 업종 카테고리 |
+| 3 | 문제 제기 | 단가 하락 압박 등 기존 플랫폼 구조의 한계와 비교 |
+| 4 | 솔루션 | 파트너 주권 · AI 오토매칭 · 진입 장벽 ZERO 3대 가치 |
+| 5 | 기술과 신뢰 | 파트너 전용 CRM 웹 콘솔 소개 |
+| 6 | 최종 CTA | "독점이 아닌 공존" — 파트너 신청 유도 |
+| 7 | 파트너 문의 | 업체명 · 담당자 · 연락처 · 주요 업종 · 문의 내용 접수 폼 |
 
-기획안대로 별도 DB 없이 로컬 JSON 파일에 적재합니다.
+## 브랜드 톤앤매너
 
-- API: `POST /api/inquiry` — [route.ts](src/app/api/inquiry/route.ts)
-- 저장 위치: `data/inquiries.json` (배열에 append)
-- 파일 입출력은 [src/lib/inquiryStore.ts](src/lib/inquiryStore.ts)에 모여 있고,
-  동시 요청 유실을 막기 위해 쓰기를 직렬화합니다.
-- 검증 규칙은 [src/lib/inquiry.ts](src/lib/inquiry.ts)에서 클라이언트·서버가 공유합니다.
-  브라우저 검증을 우회한 요청도 서버에서 동일하게 422로 반려됩니다.
-- 개인정보가 담기므로 `data/inquiries.json`은 `.gitignore` 처리했습니다.
+- **컬러**: Tech Navy(`#00183B`) 기반의 신뢰감 + 포인트 블루(`#5A9AE4`) + Stark White(`#FFFFFF`)
+- **분위기**: B2B 대상의 전문성, 혁신적(Tech)이면서 파트너를 존중하는(Human-centric) 어조
+- **모티프**: 단절된 선이 대문자 'A' 형태의 아치로 이어지는 '연결(Connection)' 이미지
 
-> ⚠️ `data/inquiries.json`을 비우면 접수된 문의가 전부 사라집니다.
-> 테스트 후 정리할 때는 파일 전체를 덮어쓰지 말고 해당 레코드만 골라 지우세요.
+## 문의 접수
 
-## 문의 내역 조회 (비밀번호 게시판)
+페이지 하단의 **파트너 문의** 폼으로 접수하면 담당 매니저가 연락드립니다.
+접수된 문의는 사이트 내 관리 화면에서 확인할 수 있습니다.
 
-푸터의 **AUTRIN ENTERPRISE CLOUD NETWORK ONLINE** 에서 `AUTRIN` 을 클릭하면
-비밀번호 모달이 열리고, 통과하면 문의 게시판이 뜹니다.
+---
 
-- 진입점: [InquiryBoard.tsx](src/components/admin/InquiryBoard.tsx) (푸터에 마운트)
-- 조회 API: `POST /api/inquiries` — [route.ts](src/app/api/inquiries/route.ts)
-- 목록: `번호 | 날짜 | 업체명 | 주요업종`, 한 페이지 10건, 최신 글이 가장 큰 번호로 맨 위
-- 행을 클릭하면 상세(연락처·담당자·문의 내용 포함)로 전환됩니다
-- 목록의 휴지통 버튼 또는 상세의 삭제 버튼으로 문의를 삭제할 수 있습니다.
-  되돌릴 수 없으므로 확인 단계를 한 번 거칩니다.
-- 모달은 **닫기 버튼으로만** 닫힙니다 (배경 클릭·ESC로 닫히지 않음)
-
-### 비밀번호 설정
-
-비밀번호는 서버 전용 환경변수로만 읽습니다. `NEXT_PUBLIC_` 접두사가 없으므로
-클라이언트 번들에 포함되지 않습니다.
-
-```bash
-cp .env.example .env.local
-# 편집 후 값 입력
-```
-
-```dotenv
-INQUIRY_ADMIN_PASSWORD='실제비밀번호'
-```
-
-> **`#` 나 `$` 가 들어간 비밀번호라면 따옴표와 `\$` 이스케이프가 둘 다 필요합니다.**
-> 따옴표가 없으면 `#` 뒤가 주석으로 잘리고, `$` 를 그대로 두면
-> 그 뒤 문자열이 환경변수 확장으로 해석되어 비밀번호가 깨집니다.
->
-> ```dotenv
-> # 예: 비밀번호가  !@#$secret123  인 경우
-> INQUIRY_ADMIN_PASSWORD='!@#\$secret123'
-> ```
->
-> 설정 후 서버에서 아래로 값이 온전한지 확인할 수 있습니다.
->
-> ```bash
-> node -e "console.log(JSON.stringify(process.env.INQUIRY_ADMIN_PASSWORD))"
-> ```
-
-환경변수가 없으면 조회 API가 503과 안내 메시지를 반환합니다.
-Vercel 등에 배포할 때는 대시보드에서 같은 키로 값을 등록하세요.
-
-> 이 기능은 단일 비밀번호 기반의 **간이 열람 장치**입니다. 비밀번호를 아는 사람은
-> 모든 문의의 연락처를 볼 수 있으므로, 운영 규모가 커지면 계정 기반 인증으로
-> 교체하는 것을 권장합니다. 무차별 대입 완화를 위해 5분/10회 실패 제한이
-> 걸려 있지만 단일 인스턴스 메모리 기준입니다.
-
-## 디자인 시스템
-
-[.docs/stitch_autrim_automotive_website_homepage/DESIGN.md](.docs/stitch_autrim_automotive_website_homepage/DESIGN.md)의
-"Autrin Kinetic Dark" 토큰을 [tailwind.config.ts](tailwind.config.ts)에 그대로 옮겼습니다.
-
-- 컬러: `surface-*`, `on-surface-*`, `primary*`, `secondary*`, `tertiary*`, `error*`
-- 타이포: `font-sora`(디스플레이/헤드라인), `font-jakarta`(본문), `font-mono`(라벨/코드)
-  — 크기는 `text-display-hero`, `text-headline-lg`, `text-body-lg` 등 시맨틱 토큰 사용
-- 간격: `gutter-xs` ~ `gutter-xl`, `section-sm` ~ `section-lg`
-- 글래스모피즘 유틸리티: `.glass-card`, `.glass-card-hover`, `.glass-overlay`, `.divider-fade`
-
-## 에셋
-
-`.docs`의 샘플 에셋을 `public/`으로 복사해 사용합니다.
-
-| 사용처 | 배포 경로 | 원본 |
-|--------|-----------|------|
-| 헤더 로고 | `public/logo/autrin-wordmark.png` | `.docs/logo-sample/metallic_4_AUTRIM 1.png` |
-| 푸터 로고 | `public/logo/autotrinity-wordmark.png` | `.docs/logo-sample/metallic_2_A_AUTOTRINITY 1.png` |
-| 파비콘 | `src/app/icon.png` | `.docs/logo-sample/metallic_1_A_lettermark1.png` |
-| Hero 배경 | `public/images/hero-banner.jpg` | `.docs/banner-sample/main_banner002_m.jpg` |
-| Problem 이미지 | `public/images/problem-banner.jpg` | `.docs/banner-sample/main_banner003_m.jpg` |
-| 카테고리 아이콘 | `public/icons/*.png` | `.docs/icon-sample/*.png` |
-
-- Hero 배경은 좌→우 그라디언트 오버레이(딥네이비 90% → 10%)를 씌워
-  왼쪽 카피 가독성을 확보하고 오른쪽으로 갈수록 이미지가 드러나게 했습니다.
-  모바일은 카피가 이미지 위 전면에 놓이므로 오버레이를 한 겹 더 얹습니다.
-- 카테고리 아이콘 원본이 어두운 단색이라 딥네이비 배경에서 보이지 않으므로
-  `globals.css`의 `.icon-tint` 필터로 브랜드 블루로 리컬러합니다.
-  (아이콘 이미지 안에 업종명 텍스트가 포함되어 있어 카드 제목과 중복 — 교체 예정)
+기획 원문은 [.docs/AUTRIN_LandingPage_Plan.md](.docs/AUTRIN_LandingPage_Plan.md),
+개발·운영 관련 정보는 [CLAUDE.md](CLAUDE.md)를 참고하세요.

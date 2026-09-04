@@ -39,6 +39,7 @@ next-env.d.ts
 /.docs/
 /.claude/
 /.vscode/
+CLAUDE.md
 # local inquiry data (파트너 문의 접수 원본)
 /data/inquiries.json
 
