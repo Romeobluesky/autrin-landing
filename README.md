@@ -54,9 +54,62 @@ npm run typecheck  # tsc --noEmit
 
 - API: `POST /api/inquiry` — [route.ts](src/app/api/inquiry/route.ts)
 - 저장 위치: `data/inquiries.json` (배열에 append)
+- 파일 입출력은 [src/lib/inquiryStore.ts](src/lib/inquiryStore.ts)에 모여 있고,
+  동시 요청 유실을 막기 위해 쓰기를 직렬화합니다.
 - 검증 규칙은 [src/lib/inquiry.ts](src/lib/inquiry.ts)에서 클라이언트·서버가 공유합니다.
   브라우저 검증을 우회한 요청도 서버에서 동일하게 422로 반려됩니다.
 - 개인정보가 담기므로 `data/inquiries.json`은 `.gitignore` 처리했습니다.
+
+> ⚠️ `data/inquiries.json`을 비우면 접수된 문의가 전부 사라집니다.
+> 테스트 후 정리할 때는 파일 전체를 덮어쓰지 말고 해당 레코드만 골라 지우세요.
+
+## 문의 내역 조회 (비밀번호 게시판)
+
+푸터의 **AUTRIN ENTERPRISE CLOUD NETWORK ONLINE** 에서 `AUTRIN` 을 클릭하면
+비밀번호 모달이 열리고, 통과하면 문의 게시판이 뜹니다.
+
+- 진입점: [InquiryBoard.tsx](src/components/admin/InquiryBoard.tsx) (푸터에 마운트)
+- 조회 API: `POST /api/inquiries` — [route.ts](src/app/api/inquiries/route.ts)
+- 목록: `번호 | 날짜 | 업체명 | 주요업종`, 한 페이지 10건, 최신 글이 가장 큰 번호로 맨 위
+- 행을 클릭하면 상세(연락처·담당자·문의 내용 포함)로 전환됩니다
+- 모달은 **닫기 버튼으로만** 닫힙니다 (배경 클릭·ESC로 닫히지 않음)
+
+### 비밀번호 설정
+
+비밀번호는 서버 전용 환경변수로만 읽습니다. `NEXT_PUBLIC_` 접두사가 없으므로
+클라이언트 번들에 포함되지 않습니다.
+
+```bash
+cp .env.example .env.local
+# 편집 후 값 입력
+```
+
+```dotenv
+INQUIRY_ADMIN_PASSWORD='실제비밀번호'
+```
+
+> **`#` 나 `$` 가 들어간 비밀번호라면 따옴표와 `\$` 이스케이프가 둘 다 필요합니다.**
+> 따옴표가 없으면 `#` 뒤가 주석으로 잘리고, `$` 를 그대로 두면
+> 그 뒤 문자열이 환경변수 확장으로 해석되어 비밀번호가 깨집니다.
+>
+> ```dotenv
+> # 예: 비밀번호가  !@#$secret123  인 경우
+> INQUIRY_ADMIN_PASSWORD='!@#\$secret123'
+> ```
+>
+> 설정 후 서버에서 아래로 값이 온전한지 확인할 수 있습니다.
+>
+> ```bash
+> node -e "console.log(JSON.stringify(process.env.INQUIRY_ADMIN_PASSWORD))"
+> ```
+
+환경변수가 없으면 조회 API가 503과 안내 메시지를 반환합니다.
+Vercel 등에 배포할 때는 대시보드에서 같은 키로 값을 등록하세요.
+
+> 이 기능은 단일 비밀번호 기반의 **간이 열람 장치**입니다. 비밀번호를 아는 사람은
+> 모든 문의의 연락처를 볼 수 있으므로, 운영 규모가 커지면 계정 기반 인증으로
+> 교체하는 것을 권장합니다. 무차별 대입 완화를 위해 5분/10회 실패 제한이
+> 걸려 있지만 단일 인스턴스 메모리 기준입니다.
 
 ## 디자인 시스템
 

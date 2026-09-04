@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { InquiryBoard } from "@/components/admin/InquiryBoard";
 import { Container } from "@/components/ui/Container";
 import { NAV_ITEMS, SECTION_IDS, anchor } from "@/lib/sections";
 
@@ -32,10 +33,8 @@ export function Footer() {
               차세대 커넥티드 차량 데이터와 정밀 정비 네트워크를 결합한 B2B 모빌리티 애프터마켓 통합
               인프라 솔루션
             </p>
-            <div className="flex items-center gap-gutter-xs font-mono text-label-code text-tertiary">
-              <span aria-hidden className="h-2 w-2 animate-pulse rounded-full bg-tertiary" />
-              <span>AUTRIN ENTERPRISE CLOUD NETWORK ONLINE</span>
-            </div>
+            {/* AUTRIN 클릭 → 비밀번호 모달 → 문의 게시판 */}
+            <InquiryBoard />
           </div>
 
           {/* 네비게이션 */}
